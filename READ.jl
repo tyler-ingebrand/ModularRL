@@ -37,12 +37,28 @@ I am going to call an object with the above 2 functions (act, update) an Agent. 
 
 # ╔═╡ ce420d87-4c25-49f1-a08c-e9066c0a6c10
 md"""
-## Classical Control
+## Control
 
-This framework also supports classical control. In control, an optimal policy is calculated based on the transition dynamics of a given problem. In the case with a known dynamics function, the control function takes the place of the policy, where it uses the state to calculate an action in some way. Since the transition dynamics are known, the update function does nothing. If the transition dynamics are unknown, the update function may update a model of the transition. As a result, the diagram for a control agent looks almost identical to a classical RL agent.
+This framework also supports control. In control, an optimal policy is calculated based on the transition dynamics of a given problem. In the case with a known dynamics function, the control function takes the place of the policy, where it uses the state to calculate an action in some way. Since the transition dynamics are known, the update function does nothing. If the transition dynamics are unknown, the update function may update a model of the transition. As a result, the diagram for a control agent looks almost identical to a classical RL agent.
 
-![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Classical%20RL%20Diagram.jpg?raw=true")
+![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Classical%20Control%20Diagram.jpg?raw=true")
 
+
+
+
+"""
+
+# ╔═╡ 0cd21999-1988-4c82-9b9b-bea6a7dac3ad
+md"""
+## Multi-Agent RL
+
+In multi-agent RL, there are assumed to be multiple decision makers interacting with the same environment. These decision makers may be cooperative, competitive, or some combination thereof. 
+
+In some circumstances, the number of decision makers is constant (such as in a game of chess). In others, the number of decision makers changes (such as cars navigating a highway). 
+
+Sometimes, all agents follow the same policy (all car drivers following the same rules). Other times, the agents follow different individual policies (think of 2 robots of different shape. They need different policies because they are not identical). 
+
+All of these cases should be representable in a modular framework. Additionally, it would be convenient to reuse classical RL or control solutions. Thus, we end up with the following diagram:
 
 
 
@@ -78,7 +94,8 @@ manifest_format = "2.0"
 # ╔═╡ Cell order:
 # ╟─820d54e9-ebf4-4d90-9b7f-e2065f8f728d
 # ╟─ec42f40a-3013-4438-8790-d0e31094c298
-# ╠═ce420d87-4c25-49f1-a08c-e9066c0a6c10
+# ╟─ce420d87-4c25-49f1-a08c-e9066c0a6c10
+# ╠═0cd21999-1988-4c82-9b9b-bea6a7dac3ad
 # ╠═742af376-5985-4dc4-a558-bb187b0e6e5a
 # ╠═94841fd3-c37a-4f85-90f8-aa44ab371bc8
 # ╟─00000000-0000-0000-0000-000000000001
