@@ -58,18 +58,22 @@ In some circumstances, the number of decision makers is constant (such as in a g
 
 Sometimes, all agents follow the same policy (all car drivers following the same rules. Due note their actions are still different because they experience a different state). Other times, the agents follow different individual policies (think of 2 robots of different shape. They need different policies because they are not identical). 
 
-All of these cases should be representable in a modular framework. Additionally, it would be convenient to reuse classical RL or control solutions. Thus, we end up with the following diagram:
+Finally, in some situations decision making can be decentralized. This means each agent makes decisions without knowing the actions of the others. In other situations, decision making is centralized. This occurs when success requires interdependent cooperation such that the agents need to know each other's action in order to work togethor. In this case, 1 centralized decision maker may tell each agent what they should do next via an add-on to their state function. 
+
+All of these cases should be representable in a modular framework. Additionally, it would be convenient to reuse classical RL or control solutions. Thus, we end up with the following diagrams:
 
 
-![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Multi-Agent%20RL%20Diagram.jpg?raw=true)
+![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Decentralized%20Multi-Agent%20RL%20Diagram.jpg?raw=true)
 
 To understand this diagram, there are a few notable details.
 
-First, the state is divided between the agents. For example, assume we have 10 agents, and each agent has a state with 10 values. Thus the state conists of 100 values. The multi-agent splits this state into 10 agent-specific states. It then feeds the agent-specific states to the respective agents. 
+This diagram shows a decentralized multi-agent scheme, where each agent (marked A sub 1 through A sub N) experiences a local state only with no centralized command structure. 
+
+The global state is split between the agents. For example, assume we have 10 agents, and each agent has a state with 10 values. Thus the global state conists of 100 values. The multi-agent splits this state into 10 agent-specific states. It then feeds the agent-specific states to the respective agents. 
 
 Likewise, the output action is a concatanation of all actions. Assume the same 10 agents have 1 action each. These actions are concatanated to create the output actions. 
 
-Additionally, each agent needs a reward signal specific to its situation. An agent cannot be expected to learn if its reward signal is cluttered with rewards caused by other agents, so we must create a reward function for each agent. Often times, this is one reward function that depends on a agent's individual circumstance, which is then used for every agent. 
+Additionally, each agent needs a reward signal specific to its situation. An agent cannot be expected to learn if its reward signal is cluttered with rewards caused by other agents, so we must create a reward function for each agent. Often times, this is one reward function that depends on a agent's local state, and this function is then used for every agent. 
 
 To perform an update, the experience must be divided into agent-specific counterparts, a reward must be calculated for each agent, and then this agent-specific experience must be fed into the update function of the agent.
 
@@ -77,20 +81,40 @@ Notably, this supports having 1 policy for all agents or unique policies for all
 
 This can also support a variable number of agents, assuming they all follow the same policy. We simply apply that same policy to each division of the state, regardless of how many divisions there are. 
 
-Notably, the agents internally can use classical RL or control algorithms. From the perspective of the Multi-Agent, it does not matter which algorithm is used for each agent.
+Notably, the agents internally can use classical RL or control algorithms. From the perspective of the Decentralized Multi-Agent, it does not matter which algorithm is used for each agent.
+
+
+We have a corresponding diagram for centralized multi-agent RL:
+
+![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Centralized%20Multi-Agent%20RL%20Diagram.jpg?raw=true)
+
+This diagram is similiar to before, with a few key differences. First, the splitter becomes a Centralized Command and Splitter. This splits the global state into local states for each agent, and also appends a command to this state telling the agent which task to be doing. Since the centralized commands must also be learned, we must include those commands in the experience. And when we call update, we must also update the centralized command based on some reward function. 
+
+** I have not worked with centralized multi-agent RL before, so this diagram may need some adjusting. Also, some centralized approaches use a centralized critic but otherwise local decision making?! This should also be possible, but it seems there are many variations of centralized approaches without any clear winners yet ** 
+
+
+
+"""
+
+# ╔═╡ 38d5ecbd-cb5f-4985-978f-53c73c1651b5
+md"""
+## Compositional RL
+
+
+
 
 """
 
 # ╔═╡ 742af376-5985-4dc4-a558-bb187b0e6e5a
 md"""
-# Explainable AI
-"""
+## Benefits
+* Explainable AI
+* 
 
-# ╔═╡ 94841fd3-c37a-4f85-90f8-aa44ab371bc8
-md"""
 
-![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Cat.jpeg?raw=true")
+## Example of the Modular Stack
 
+Robot ikea example
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -112,8 +136,8 @@ manifest_format = "2.0"
 # ╟─820d54e9-ebf4-4d90-9b7f-e2065f8f728d
 # ╟─ec42f40a-3013-4438-8790-d0e31094c298
 # ╟─ce420d87-4c25-49f1-a08c-e9066c0a6c10
-# ╠═0cd21999-1988-4c82-9b9b-bea6a7dac3ad
+# ╟─0cd21999-1988-4c82-9b9b-bea6a7dac3ad
+# ╠═38d5ecbd-cb5f-4985-978f-53c73c1651b5
 # ╠═742af376-5985-4dc4-a558-bb187b0e6e5a
-# ╠═94841fd3-c37a-4f85-90f8-aa44ab371bc8
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
