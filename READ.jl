@@ -90,7 +90,7 @@ We have a corresponding diagram for centralized multi-agent RL:
 
 This diagram is similiar to before, with a few key differences. First, the splitter becomes a Centralized Command and Splitter. This splits the global state into local states for each agent, and also appends a command to this state telling the agent which task to be doing. Since the centralized commands must also be learned, we must include those commands in the experience. And when we call update, we must also update the centralized command based on some reward function. 
 
-** I have not worked with centralized multi-agent RL before, so this diagram may need some adjusting. Also, some centralized approaches use a centralized critic but otherwise local decision making?! This should also be possible, but it seems there are many variations of centralized approaches without any clear winners yet ** 
+** I have not worked with centralized multi-agent RL before, so this diagram may need some adjusting. Also, some centralized approaches use a centralized critic but otherwise local decision making?! This should also be possible, but it seems there are many variations of centralized approaches without any clear paradigms yet, at least as far as I know ** 
 
 
 
@@ -100,8 +100,29 @@ This diagram is similiar to before, with a few key differences. First, the split
 md"""
 ## Compositional RL
 
+In compositional RL, or CRL, we have multiple agents with the same inputs and outputs. However, their policies are based on different reward functions, and so they produce different behaviors. 
 
+A typical case is break a complex MDP into smaller, easier subtasks, and to train an agent for each subtask. Then, to solve the complex MDP, you simply use the policy of whichever agent should be active given the situation. Often, this can be implemented as a switch statement which decides which agent to use. The corresponding diagram looks like the following:
 
+![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/CRL%20Diagram.jpg?raw=true)
+
+**In this example, I only show 3 agents, although you could do any number **
+
+First, you'll notice this looks similiar to a decentralized multi-agent. Unlike in multi-agent RL however, the state is the same for all agents. We use the state as the input to a control function which outputs which agent should be active. Based on that control signal, and a demultiplexor, we send the state to only the 1 agent we want to use. Then, that agent's action is the output. This output is also selected based on the same control signal, although its not shown to avoid cluttering the diagram.
+
+Likewise, an experience update only applies to one of the agents. So, based on the state of the experience, we use our control function to get a control signal. Then, the experience is once again demulitplexed to the correct agent. Only 1 of the agents updates with each call of update on the Compositional agent. 
+
+As mentioned, the control function can often be a switch statement. I will go over an example in detail later on in this document.
+
+"""
+
+# ╔═╡ 5223bfac-b7e3-4f7f-ba0a-9b5284bcf373
+md""" 
+## Hierarchical RL
+
+Last but not least, Hierarchical RL (HRL) can also be represented in this framework. HRL is very similiar to CRL except that the control signal is some learned function. This will work better than CRL in cases where it is hard to know which subtasks should be active. 
+
+Additionally, the reward function may be predefined, or it may be based on achieving some goal. 
 
 """
 
@@ -110,6 +131,8 @@ md"""
 ## Benefits
 * Explainable AI
 * 
+
+## Costs
 
 
 ## Example of the Modular Stack
@@ -137,7 +160,8 @@ manifest_format = "2.0"
 # ╟─ec42f40a-3013-4438-8790-d0e31094c298
 # ╟─ce420d87-4c25-49f1-a08c-e9066c0a6c10
 # ╟─0cd21999-1988-4c82-9b9b-bea6a7dac3ad
-# ╠═38d5ecbd-cb5f-4985-978f-53c73c1651b5
-# ╠═742af376-5985-4dc4-a558-bb187b0e6e5a
+# ╟─38d5ecbd-cb5f-4985-978f-53c73c1651b5
+# ╠═5223bfac-b7e3-4f7f-ba0a-9b5284bcf373
+# ╟─742af376-5985-4dc4-a558-bb187b0e6e5a
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
