@@ -122,22 +122,49 @@ md"""
 
 Last but not least, Hierarchical RL (HRL) can also be represented in this framework. HRL is very similiar to CRL except that the control signal is some learned function. This will work better than CRL in cases where it is hard to know which subtasks should be active. 
 
-Additionally, the reward function may be predefined, or it may be based on achieving some goal. 
+Additionally, the reward function may be predefined, or it may be based on achieving some goal.
+
+![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/HRL%20Diagram.jpg?raw=true)
+
+
+The act function is identical to before, where the state is sent to a single agent via some control signal. This control signal is based on a learned policy instead of a switch statement however.
+
+The update function will change somewhat. We still need to Demux the experience and send it to the correct agent. However, since the control function is changing, we want to make sure an experience is sent to the agent that performed it. So, the experience must also contain the control signal. This allows us to make sure the correct agent is updated.
+
+Also, we need to update the learned control based on the experience. Again, it depends on the control signal it sent, which is not typically part of the action, so that will need to be added to the experience as well. We can use this information, and some reward function specific to the control function, to improve the control function. 
+
+In the case that the reward functions for each agent are also changing, that will need to be computed from the experience after demuxing as well.
+
+** HRL is also an area I have little experience. This diagram too may need some changes ** 
+
 
 """
 
 # ╔═╡ 742af376-5985-4dc4-a558-bb187b0e6e5a
 md"""
 ## Benefits
-* Explainable AI
-* 
+### Modularity - Potentially Reuseable
+Since agents are modular, it is possible a trained agent could be reused in different tasks. This would save training time as we may only need to learn a policy for a given tasks once, and then learn how to use that policy for other tasks instead of relearning the policy. Please see the example.
+
+### Explainable AI
+Given that we have converted agents into modules, we can understand them individually. This allows us to understand a given policy with respect to the reward function we've given it, whereas an end-to-end system may be so complex we cannot do so. Also, especially with CRL, it is much easier to understand overall behavior by simply checking which of the agents is currently active. This provides us some means of explaining behavior produced by the system.
+
+### Problem Complexity Reduction
+By breaking up a problem into smaller problems, the overall complexity is reduced. That is, the sum of the complexity of the sub-problems is less than the complexity of the original. This means MDPs that are potentially unsolvable on their own may be feasible if broken down enough times. This may also include information hiding. Please see the example.
+
+### Closed Agent Construction
+Since each of the above formulations has the same interface - act, update - the construction of agents is closed. This means we can compose complex agents using other complex agents. I will demonstrate this in the example, but basically this means a compositional agent can make use of other compositional agents, and a hierarchical agent can make use of compositional agents, and so on. Please see the example.
 
 ## Costs
-
+* Some Julia RL Algorithm fidgeting - The current algorithms in Julia use a slightly different interface. We should be able to copy and paste most of their code, but it will require some fidgeting. The MDP formulation and trajectory objects should be reusable. 
 
 ## Example of the Modular Stack
 
-Robot ikea example
+Consider the problem of assembling Ikea furniture using 2 robots. Clearly, this problem cannot be solved end-to-end. The state space and action space of 2 robots concatanated would be exceptionally large, and the desired behavior equally complex. 
+
+Also, since we have 2 robots, we know this problem could benefit from multi-agent RL (probably centralized). Robots themselves are quite difficult to teach complex behavior, so each robot may benefit from compositional RL. 
+
+
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -161,7 +188,7 @@ manifest_format = "2.0"
 # ╟─ce420d87-4c25-49f1-a08c-e9066c0a6c10
 # ╟─0cd21999-1988-4c82-9b9b-bea6a7dac3ad
 # ╟─38d5ecbd-cb5f-4985-978f-53c73c1651b5
-# ╠═5223bfac-b7e3-4f7f-ba0a-9b5284bcf373
-# ╟─742af376-5985-4dc4-a558-bb187b0e6e5a
+# ╟─5223bfac-b7e3-4f7f-ba0a-9b5284bcf373
+# ╠═742af376-5985-4dc4-a558-bb187b0e6e5a
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
