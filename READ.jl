@@ -48,6 +48,26 @@ This framework also supports control. In control, an optimal policy is calculate
 
 """
 
+# ╔═╡ f69850d4-8323-4c7e-a632-b5fd087fc786
+md"""
+## Information Hiding
+
+Often times, some of the information in the state space is redundant and can be removed without making the problem infeasible. Removing redundant information makes the problem easier to solve because the state space is reduced. 
+
+One good example of this is removing symmetries from your MDP. If your MDP has multiple symmetric states with identical actions, you can simply map all of these symmetric states to one state, and then the others do not need to be explored.
+
+There is an equilvalent operation on the output action, where some part of the action space is known and does not need to be learned. A possible example of this is asuming some neutral action for action dimensions that are unused. Assuming an action in this way is less common, but still easily supported.
+
+Both information hiding and action assumptions can be represented by the following diagram. Note the state is transformed by the information hiding function before being passed into the agent. The output action is transformed after before being output. 
+
+The update function must also apply both of these functions to an experience before passing them to the update function of the agent.
+
+
+![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Information%20Hiding%20RL%20Diagram.jpg?raw=true)
+
+
+"""
+
 # ╔═╡ 0cd21999-1988-4c82-9b9b-bea6a7dac3ad
 md"""
 ## Multi-Agent RL
@@ -156,14 +176,19 @@ By breaking up a problem into smaller problems, the overall complexity is reduce
 Since each of the above formulations has the same interface - act, update - the construction of agents is closed. This means we can compose complex agents using other complex agents. I will demonstrate this in the example, but basically this means a compositional agent can make use of other compositional agents, and a hierarchical agent can make use of compositional agents, and so on. Please see the example.
 
 ## Costs
-* Some Julia RL Algorithm fidgeting - The current algorithms in Julia use a slightly different interface. We should be able to copy and paste most of their code, but it will require some fidgeting. The MDP formulation and trajectory objects should be reusable. 
+Besides the obvious implementation time, some Julia RL Algorithm fidgeting - The current algorithms in Julia use a slightly different interface. We should be able to copy and paste most of their code, but it will require some fidgeting. The MDP formulation and trajectory objects should be reusable. 
 
 ## Example of the Modular Stack
 
-Consider the problem of assembling Ikea furniture using 2 robots. Clearly, this problem cannot be solved end-to-end. The state space and action space of 2 robots concatanated would be exceptionally large, and the desired behavior equally complex. 
+Consider the problem of assembling Ikea furniture using 2 humanoid robots. Clearly, this problem cannot be solved end-to-end. The state space and action space of 2 robots concatanated would be exceptionally large, and the desired behavior equally complex. 
 
-Also, since we have 2 robots, we know this problem could benefit from multi-agent RL (probably centralized). Robots themselves are quite difficult to teach complex behavior, so each robot may benefit from compositional RL. 
+Also, since we have 2 robots, we know this problem could benefit from multi-agent RL (probably centralized). Robots themselves are quite difficult to teach complex behavior, so each robot may benefit from compositional RL. This may even require multiple layers of compositional behavior. Additionally, since not all actions require all of the robots limbs at once, each limb could potentially by considered a different agent. This allows for multi-agent RL to control different limbs and given them different tasks at the same time (consider walking and chewing gum at the same time - Without considering the robot to be composed of multi-agents, this task would have to be learned specifically. Whereas with a multi-agent structure, you would only need to learn walking and chewing independently, and then combine them using multi-agents). At the lowest layer, we will probably need classical RL but also potentially some control algorithms. 
 
+An abbreviated diagram would look something like this:
+
+
+** Arrows are removed for simplicity. This diagram only shows the modules used **
+Note how modules are composed of other modules, and some modules can be reused - especially low level tasks such as holding an object, rotating an object, etc. 
 
 """
 
@@ -186,6 +211,7 @@ manifest_format = "2.0"
 # ╟─820d54e9-ebf4-4d90-9b7f-e2065f8f728d
 # ╟─ec42f40a-3013-4438-8790-d0e31094c298
 # ╟─ce420d87-4c25-49f1-a08c-e9066c0a6c10
+# ╟─f69850d4-8323-4c7e-a632-b5fd087fc786
 # ╟─0cd21999-1988-4c82-9b9b-bea6a7dac3ad
 # ╟─38d5ecbd-cb5f-4985-978f-53c73c1651b5
 # ╟─5223bfac-b7e3-4f7f-ba0a-9b5284bcf373
