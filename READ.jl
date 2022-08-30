@@ -56,11 +56,28 @@ In multi-agent RL, there are assumed to be multiple decision makers interacting 
 
 In some circumstances, the number of decision makers is constant (such as in a game of chess). In others, the number of decision makers changes (such as cars navigating a highway). 
 
-Sometimes, all agents follow the same policy (all car drivers following the same rules). Other times, the agents follow different individual policies (think of 2 robots of different shape. They need different policies because they are not identical). 
+Sometimes, all agents follow the same policy (all car drivers following the same rules. Due note their actions are still different because they experience a different state). Other times, the agents follow different individual policies (think of 2 robots of different shape. They need different policies because they are not identical). 
 
 All of these cases should be representable in a modular framework. Additionally, it would be convenient to reuse classical RL or control solutions. Thus, we end up with the following diagram:
 
 
+![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Multi-Agent%20RL%20Diagram.jpg?raw=true)
+
+To understand this diagram, there are a few notable details.
+
+First, the state is divided between the agents. For example, assume we have 10 agents, and each agent has a state with 10 values. Thus the state conists of 100 values. The multi-agent splits this state into 10 agent-specific states. It then feeds the agent-specific states to the respective agents. 
+
+Likewise, the output action is a concatanation of all actions. Assume the same 10 agents have 1 action each. These actions are concatanated to create the output actions. 
+
+Additionally, each agent needs a reward signal specific to its situation. An agent cannot be expected to learn if its reward signal is cluttered with rewards caused by other agents, so we must create a reward function for each agent. Often times, this is one reward function that depends on a agent's individual circumstance, which is then used for every agent. 
+
+To perform an update, the experience must be divided into agent-specific counterparts, a reward must be calculated for each agent, and then this agent-specific experience must be fed into the update function of the agent.
+
+Notably, this supports having 1 policy for all agents or unique policies for all agents. In the case of 1 policy for all agents, each agent is simply a shallow copy of the original. Thus, in a given update, that 1 agent receives N experience updates. If each policy is unique, then N agents can be created. 
+
+This can also support a variable number of agents, assuming they all follow the same policy. We simply apply that same policy to each division of the state, regardless of how many divisions there are. 
+
+Notably, the agents internally can use classical RL or control algorithms. From the perspective of the Multi-Agent, it does not matter which algorithm is used for each agent.
 
 """
 
