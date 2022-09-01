@@ -186,25 +186,11 @@ Also, since we have 2 robots, we know this problem could benefit from multi-agen
 
 An abbreviated diagram would look something like this:
 
+![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Ikea%20Robots%20Example.jpg?raw=true)
 
 ** Arrows are removed for simplicity. This diagram only shows the modules used **
 Note how modules are composed of other modules, and some modules can be reused - especially low level tasks such as holding an object, rotating an object, etc. 
 
-"""
-
-# ╔═╡ 00000000-0000-0000-0000-000000000001
-PLUTO_PROJECT_TOML_CONTENTS = """
-[deps]
-"""
-
-# ╔═╡ 00000000-0000-0000-0000-000000000002
-PLUTO_MANIFEST_TOML_CONTENTS = """
-# This file is machine-generated - editing it directly is not advised
-
-julia_version = "1.7.2"
-manifest_format = "2.0"
-
-[deps]
 """
 
 # ╔═╡ Cell order:
@@ -215,6 +201,4 @@ manifest_format = "2.0"
 # ╟─0cd21999-1988-4c82-9b9b-bea6a7dac3ad
 # ╟─38d5ecbd-cb5f-4985-978f-53c73c1651b5
 # ╟─5223bfac-b7e3-4f7f-ba0a-9b5284bcf373
-# ╠═742af376-5985-4dc4-a558-bb187b0e6e5a
-# ╟─00000000-0000-0000-0000-000000000001
-# ╟─00000000-0000-0000-0000-000000000002
+# ╟─742af376-5985-4dc4-a558-bb187b0e6e5a
