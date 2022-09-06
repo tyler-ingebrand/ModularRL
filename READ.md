@@ -1,11 +1,5 @@
-### A Pluto.jl notebook ###
-# v0.19.9
 
-using Markdown
-using InteractiveUtils
 
-# ╔═╡ 820d54e9-ebf4-4d90-9b7f-e2065f8f728d
-md"""
 # Modular RL
 
 ## Introduction
@@ -14,10 +8,8 @@ This project seeks to solve [Markov Decision Processes (MDP)](https://en.wikiped
 
 Please read the following descriptions of each type of RL and how it fits into the framework.
 
-"""
 
-# ╔═╡ ec42f40a-3013-4438-8790-d0e31094c298
-md"""
+
 ## Classical RL
 
 For the purposes of this project, I am defining classical RL to be typical end-to-end approaches to solving MDPs. These approaches work well for many simple problems but eventually break down as problem complexity increases. Example algorithms are [DQN](https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf), [DDPG](https://spinningup.openai.com/en/latest/algorithms/ddpg.html), and [PPO](https://arxiv.org/abs/1707.06347). Explaining the details of these algorithms is beyond the scope of this document, but generally speaking they are algorithms designed to solve MDPs via trial and error learning approaches. This means the algorithm tries different actions and uses the results to improve the policy. The policy is just a function which returns an action based on the state of the MDP.
@@ -33,10 +25,9 @@ A classical RL algorithm can be represented by the diagram below. The flow from 
 
 I am going to call an object with the above 2 functions (act, update) an Agent. As we will see, an Agent object can represent many different types of MDP-solving actions from all types of RL and control.
 
-"""
 
-# ╔═╡ ce420d87-4c25-49f1-a08c-e9066c0a6c10
-md"""
+
+
 ## Control
 
 This framework also supports control. In control, an optimal policy is calculated based on the transition dynamics of a given problem. In the case with a known dynamics function, the control function takes the place of the policy, where it uses the state to calculate an action in some way. Since the transition dynamics are known, the update function does nothing. If the transition dynamics are unknown, the update function may update a model of the transition. As a result, the diagram for a control agent looks almost identical to a classical RL agent.
@@ -46,17 +37,16 @@ This framework also supports control. In control, an optimal policy is calculate
 
 
 
-"""
 
-# ╔═╡ f69850d4-8323-4c7e-a632-b5fd087fc786
-md"""
+
+
 ## Information Hiding
 
 Often times, some of the information in the state space is redundant and can be removed without making the problem infeasible. Removing redundant information makes the problem easier to solve because the state space is reduced. 
 
 One good example of this is removing symmetries from your MDP. If your MDP has multiple symmetric states with identical actions, you can simply map all of these symmetric states to one state, and then the others do not need to be explored.
 
-There is an equilvalent operation on the output action, where some part of the action space is known and does not need to be learned. A possible example of this is assuming some neutral action for action dimensions that are unused. Assuming an action in this way is less common, but still easily supported.
+There is an equilvalent operation on the output action, where some part of the action space is known and does not need to be learned. A possible example of this is asuming some neutral action for action dimensions that are unused. Assuming an action in this way is less common, but still easily supported.
 
 Both information hiding and action assumptions can be represented by the following diagram. Note the state is transformed by the information hiding function before being passed into the agent. The output action is transformed after before being output. 
 
@@ -66,10 +56,9 @@ The update function must also apply both of these functions to an experience bef
 ![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Information%20Hiding%20RL%20Diagram.jpg?raw=true)
 
 
-"""
 
-# ╔═╡ 0cd21999-1988-4c82-9b9b-bea6a7dac3ad
-md"""
+
+
 ## Multi-Agent RL
 
 In multi-agent RL, there are assumed to be multiple decision makers interacting with the same environment. These decision makers may be cooperative, competitive, or some combination thereof. 
@@ -114,10 +103,9 @@ This diagram is similiar to before, with a few key differences. First, the split
 
 
 
-"""
 
-# ╔═╡ 38d5ecbd-cb5f-4985-978f-53c73c1651b5
-md"""
+
+
 ## Compositional RL
 
 In compositional RL, or CRL, we have multiple agents with the same inputs and outputs. However, their policies are based on different reward functions, and so they produce different behaviors. 
@@ -134,10 +122,9 @@ Likewise, an experience update only applies to one of the agents. So, based on t
 
 As mentioned, the control function can often be a switch statement. I will go over an example in detail later on in this document.
 
-"""
 
-# ╔═╡ 5223bfac-b7e3-4f7f-ba0a-9b5284bcf373
-md""" 
+
+ 
 ## Hierarchical RL
 
 Last but not least, Hierarchical RL (HRL) can also be represented in this framework. HRL is very similiar to CRL except that the control signal is some learned function. This will work better than CRL in cases where it is hard to know which subtasks should be active. 
@@ -158,10 +145,9 @@ In the case that the reward functions for each agent are also changing, that wil
 ** HRL is also an area I have little experience. This diagram too may need some changes ** 
 
 
-"""
 
-# ╔═╡ 742af376-5985-4dc4-a558-bb187b0e6e5a
-md"""
+
+
 ## Benefits
 ### Modularity - Potentially Reuseable
 Since agents are modular, it is possible a trained agent could be reused in different tasks. This would save training time as we may only need to learn a policy for a given tasks once, and then learn how to use that policy for other tasks instead of relearning the policy. Please see the example.
@@ -189,22 +175,6 @@ An abbreviated diagram would look something like this:
 ![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Ikea%20Robots%20Example.jpg?raw=true)
 
 ** Arrows are removed for simplicity. This diagram only shows the modules used **
+Note how modules are composed of other modules, and some modules can be reused - especially low level tasks such as holding an object, rotating an object, etc. 
 
-Note how modules are composed of other modules, and some modules can be reused - especially low level tasks such as holding an object, rotating an object, etc. This framework would scale to incredibly complex tasks such as this one.
 
-"""
-
-# ╔═╡ Cell order:
-# ╟─820d54e9-ebf4-4d90-9b7f-e2065f8f728d
-# ╟─ec42f40a-3013-4438-8790-d0e31094c298
-# ╟─ce420d87-4c25-49f1-a08c-e9066c0a6c10
-# ╟─f69850d4-8323-4c7e-a632-b5fd087fc786
-# ╟─0cd21999-1988-4c82-9b9b-bea6a7dac3ad
-# ╟─38d5ecbd-cb5f-4985-978f-53c73c1651b5
-# ╟─5223bfac-b7e3-4f7f-ba0a-9b5284bcf373
-# ╟─742af376-5985-4dc4-a558-bb187b0e6e5a
-<<<<<<< HEAD
-# ╟─00000000-0000-0000-0000-000000000001
-# ╟─00000000-0000-0000-0000-000000000002
-=======
->>>>>>> dc6d4d06ee6ca4b6e82eb4a17645dd7421c460f4
