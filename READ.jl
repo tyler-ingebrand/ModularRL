@@ -56,7 +56,7 @@ Often times, some of the information in the state space is redundant and can be 
 
 One good example of this is removing symmetries from your MDP. If your MDP has multiple symmetric states with identical actions, you can simply map all of these symmetric states to one state, and then the others do not need to be explored.
 
-There is an equilvalent operation on the output action, where some part of the action space is known and does not need to be learned. A possible example of this is asuming some neutral action for action dimensions that are unused. Assuming an action in this way is less common, but still easily supported.
+There is an equilvalent operation on the output action, where some part of the action space is known and does not need to be learned. A possible example of this is assuming some neutral action for action dimensions that are unused. Assuming an action in this way is less common, but still easily supported.
 
 Both information hiding and action assumptions can be represented by the following diagram. Note the state is transformed by the information hiding function before being passed into the agent. The output action is transformed after before being output. 
 
@@ -185,10 +185,11 @@ Consider the problem of assembling Ikea furniture using 2 humanoid robots. Clear
 Also, since we have 2 robots, we know this problem could benefit from multi-agent RL (probably centralized). Robots themselves are quite difficult to teach complex behavior, so each robot may benefit from compositional RL. This may even require multiple layers of compositional behavior. Additionally, since not all actions require all of the robots limbs at once, each limb could potentially by considered a different agent. This allows for multi-agent RL to control different limbs and given them different tasks at the same time (consider walking and chewing gum at the same time - Without considering the robot to be composed of multi-agents, this task would have to be learned specifically. Whereas with a multi-agent structure, you would only need to learn walking and chewing independently, and then combine them using multi-agents). At the lowest layer, we will probably need classical RL but also potentially some control algorithms. 
 
 An abbreviated diagram would look something like this:
-
+![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Ikea%20Robots%20Example.jpg?raw=true)
 
 ** Arrows are removed for simplicity. This diagram only shows the modules used **
-Note how modules are composed of other modules, and some modules can be reused - especially low level tasks such as holding an object, rotating an object, etc. 
+
+Note how modules are composed of other modules, and some modules can be reused - especially low level tasks such as holding an object, rotating an object, etc. This framework would scale to incredibly complex tasks such as this one.
 
 """
 
@@ -215,6 +216,6 @@ manifest_format = "2.0"
 # ╟─0cd21999-1988-4c82-9b9b-bea6a7dac3ad
 # ╟─38d5ecbd-cb5f-4985-978f-53c73c1651b5
 # ╟─5223bfac-b7e3-4f7f-ba0a-9b5284bcf373
-# ╠═742af376-5985-4dc4-a558-bb187b0e6e5a
+# ╟─742af376-5985-4dc4-a558-bb187b0e6e5a
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
