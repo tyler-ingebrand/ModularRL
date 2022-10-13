@@ -5,8 +5,6 @@ env = gym.make("Pendulum-v1")
 model = PPO("MlpPolicy", env, verbose=1, )
 model.learn(total_timesteps=1_000)
 
-print(model.rollout_buffer)
-
 obs = env.reset()
 for i in range(1000):
     action, _states = model.predict(obs, deterministic=True)
