@@ -161,9 +161,6 @@ By breaking up a problem into smaller problems, the overall complexity is reduce
 ### Closed Agent Construction
 Since each of the above formulations has the same interface - act, update - the construction of agents is closed. This means we can compose complex agents using other complex agents. I will demonstrate this in the example, but basically this means a compositional agent can make use of other compositional agents, and a hierarchical agent can make use of compositional agents, and so on. Please see the example.
 
-## Costs
-Besides the obvious implementation time, some Julia RL Algorithm fidgeting - The current algorithms in Julia use a slightly different interface. We should be able to copy and paste most of their code, but it will require some fidgeting. The MDP formulation and trajectory objects should be reusable. 
-
 ## Example of the Modular Stack
 
 Consider the problem of assembling Ikea furniture using 2 humanoid robots. Clearly, this problem cannot be solved end-to-end. The state space and action space of 2 robots concatanated would be exceptionally large, and the desired behavior equally complex. 
