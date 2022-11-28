@@ -3,7 +3,7 @@ from stable_baselines3 import PPO, TD3
 
 env = gym.make("Pendulum-v1")
 model = PPO("MlpPolicy", env, verbose=1, )
-model.learn(total_timesteps=1_000)
+model.learn(total_timesteps=500_000)
 
 obs = env.reset()
 for i in range(1000):

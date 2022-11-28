@@ -3,7 +3,7 @@
 # This provides an interface for creating a hook.
 class Abstract_Hook:
     # Update the hook with an observation of what is happening in the training cycle
-    def observe(self, agent, obs, action, reward, done, info):
+    def observe(self, agent, obs, action, reward, done, info, tag = "1"):
         raise Exception("Unimplemented")
 
     # Return the result of the hooks observations. Can be anything, depending on what the hook is for

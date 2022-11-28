@@ -8,9 +8,9 @@ class Multi_Hook(Abstract_Hook):
         self.hooks = list_o_hooks
 
     # Send observations to all hooks
-    def observe(self,  agent, obs, action, reward, done, info):
+    def observe(self,  agent, obs, action, reward, done, info, tag = "1"):
         for h in self.hooks:
-            h.observe(agent,obs,action,reward,done,info)
+            h.observe(agent,obs,action,reward,done,info, tag)
 
     # Get output from a hooks, return them as a list
     def get_output(self):
