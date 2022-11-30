@@ -16,21 +16,21 @@ For the purposes of this project, I am defining classical RL to be typical end-t
 
 Most if not all classical RL algorithms have the following structure. They consists of only 2 functions: 
 * An act function, which takes in the state and returns the action. 
-* An update function, which takes in an experience of interacting with the MDP and updates the policy. Typically, this function call records the experience into a buffer, but only updates the policy every so many steps.
+* A learn function, which takes in an experience of interacting with the MDP and updates the policy. Typically, this function call records the experience into a buffer, but only updates the policy every so many steps.
 
 A classical RL algorithm can be represented by the diagram below. The flow from State > Policy > Action represents how states are fed into the policy and an action is returned. The dotted line from Experience > Policy represents how an experience is used to update the policy via whatever algorithm is being used. 
 
 
 ![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Classical%20RL%20Diagram.jpg?raw=true")
 
-I am going to call an object with the above 2 functions (act, update) an Agent. As we will see, an Agent object can represent many different types of MDP-solving actions from all types of RL and control.
+I am going to call an object with the above 2 functions (act, learn) an Agent. As we will see, an Agent object can represent many different types of MDP-solving actions from all types of RL and control.
 
 
 
 
 ## Control
 
-This framework also supports control. In control, an optimal policy is calculated based on the transition dynamics of a given problem. In the case with a known dynamics function, the control function takes the place of the policy, where it uses the state to calculate an action in some way. Since the transition dynamics are known, the update function does nothing. If the transition dynamics are unknown, the update function may update a model of the transition. As a result, the diagram for a control agent looks almost identical to a classical RL agent.
+This framework also supports control. In control, an optimal policy is calculated based on the transition dynamics of a given problem. In the case with a known dynamics function, the control function takes the place of the policy, where it uses the state to calculate an action in some way. Since the transition dynamics are known, the learn function does nothing. If the transition dynamics are unknown, the learn function may update a model of the transition. As a result, the diagram for a control agent looks almost identical to a classical RL agent.
 
 ![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Classical%20Control%20Diagram.jpg?raw=true")
 
@@ -50,7 +50,7 @@ There is an equilvalent operation on the output action, where some part of the a
 
 Both information hiding and action assumptions can be represented by the following diagram. Note the state is transformed by the information hiding function before being passed into the agent. The output action is transformed after before being output. 
 
-The update function must also apply both of these functions to an experience before passing them to the update function of the agent.
+The learn function must also apply both of these functions to an experience before passing them to the learn function of the agent.
 
 
 ![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Information%20Hiding%20RL%20Diagram.jpg?raw=true)
@@ -97,7 +97,7 @@ We have a corresponding diagram for centralized multi-agent RL:
 
 ![Internet required to see images](https://github.com/tyler-ingebrand/ModularRL/blob/master/docs/images/Centralized%20Multi-Agent%20RL%20Diagram.jpg?raw=true)
 
-This diagram is similiar to before, with a few key differences. First, the splitter becomes a Centralized Command and Splitter. This splits the global state into local states for each agent, and also appends a command to this state telling the agent which task to be doing. Since the centralized commands must also be learned, we must include those commands in the experience. And when we call update, we must also update the centralized command based on some reward function. 
+This diagram is similiar to before, with a few key differences. First, the splitter becomes a Centralized Command and Splitter. This splits the global state into local states for each agent, and also appends a command to this state telling the agent which task to be doing. Since the centralized commands must also be learned, we must include those commands in the experience. And when we call learn, we must also update the centralized command based on some reward function. 
 
 ** I have not worked with centralized multi-agent RL before, so this diagram may need some adjusting. Also, some centralized approaches use a centralized critic but otherwise local decision making?! This should also be possible, but it seems there are many variations of centralized approaches without any clear paradigms yet, at least as far as I know ** 
 
@@ -118,7 +118,7 @@ A typical case is break a complex MDP into smaller, easier subtasks, and to trai
 
 First, you'll notice this looks similiar to a decentralized multi-agent. Unlike in multi-agent RL however, the state is the same for all agents. We use the state as the input to a control function which outputs which agent should be active. Based on that control signal, and a demultiplexor, we send the state to only the 1 agent we want to use. Then, that agent's action is the output. This output is also selected based on the same control signal, although its not shown to avoid cluttering the diagram.
 
-Likewise, an experience update only applies to one of the agents. So, based on the state of the experience, we use our control function to get a control signal. Then, the experience is once again demulitplexed to the correct agent. Only 1 of the agents updates with each call of update on the Compositional agent. 
+Likewise, an experience update only applies to one of the agents. So, based on the state of the experience, we use our control function to get a control signal. Then, the experience is once again demulitplexed to the correct agent. Only 1 of the agents updates with each call of learn on the Compositional agent. 
 
 As mentioned, the control function can often be a switch statement. I will go over an example in detail later on in this document.
 
@@ -136,7 +136,7 @@ Additionally, the reward function may be predefined, or it may be based on achie
 
 The act function is identical to before, where the state is sent to a single agent via some control signal. This control signal is based on a learned policy instead of a switch statement however.
 
-The update function will change somewhat. We still need to Demux the experience and send it to the correct agent. However, since the control function is changing, we want to make sure an experience is sent to the agent that performed it. So, the experience must also contain the control signal. This allows us to make sure the correct agent is updated.
+The learn function will change somewhat. We still need to Demux the experience and send it to the correct agent. However, since the control function is changing, we want to make sure an experience is sent to the agent that performed it. So, the experience must also contain the control signal. This allows us to make sure the correct agent is updated.
 
 Also, we need to update the learned control based on the experience. Again, it depends on the control signal it sent, which is not typically part of the action, so that will need to be added to the experience as well. We can use this information, and some reward function specific to the control function, to improve the control function. 
 
