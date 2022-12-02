@@ -23,7 +23,7 @@ class Multi_Agent(Abstract_Agent):
             agent_action, agent_extras = self.agents[key].act(state[key])
             actions[key] = agent_action
             extras[key] = agent_extras
-        return actions
+        return actions, extras
 
     # The main function to learn from data. At a high level, takes in a transition (SARS) and should update the function
     # ocassionally updates the policy, but always stores transition
@@ -38,5 +38,5 @@ class Multi_Agent(Abstract_Agent):
     def plot(self):
         self.hook.plot()
         for a in self.agents:
-            a.plot()
+            self.agents[a].plot()
 

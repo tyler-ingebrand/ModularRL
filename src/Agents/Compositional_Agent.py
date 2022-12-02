@@ -10,15 +10,19 @@ class Compositional_Agent(Abstract_Agent):
                  agents, # a list of agents to activate
                  determine_active_agent,  # A function of the state which returns the index of the active agent
                  reward_functions, # A list of reward functions to use, with indices matching the index of the agent
-                 hook : Abstract_Hook = Do_Nothing_Hook() # The hook to observe this process
+                 hook : Abstract_Hook = Do_Nothing_Hook(), # The hook to observe this process
+                 update_memory=lambda state, memory : None,
                  ):
         self.hook = hook
         self.agents = agents
         self.determine_active_agent = determine_active_agent
         self.reward_functions = reward_functions
+        self.update_memory = update_memory
+        self.memory = {}
 
     def act(self, state):
-        active_agent_index = self.determine_active_agent(state)
+        self.memory = self.update_memory(state, self.memory)
+        active_agent_index = self.determine_active_agent(state, self.memory)
         return self.agents[active_agent_index].act(state)
 
     def learn(self, state, action, reward, next_state, done, info, extras, tag = "1"):
@@ -26,8 +30,8 @@ class Compositional_Agent(Abstract_Agent):
         self.hook.observe(self, state, action, reward, done, info, tag)
 
         # Figure out which agent made the action, and which will make it at the next step
-        current_active_agent = self.determine_active_agent(state)
-        next_active_agent = self.determine_active_agent(next_state)
+        current_active_agent = self.determine_active_agent(state, self.memory)
+        next_active_agent = self.determine_active_agent(next_state, self.memory)
 
         # done if MDP terminates or if the agent to act in next state is different, which means the sub-MDP has terminated
         current_done = done or current_active_agent != next_active_agent
