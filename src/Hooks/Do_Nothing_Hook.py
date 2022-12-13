@@ -1,4 +1,5 @@
 from src.Hooks.Abstract_Hook import Abstract_Hook
+# from ModularRL import Abstract_Hook
 
 # A hook which does nothing. Used as a default when we dont want a hook
 # But we want the variable to not be None to avoid an error.

@@ -13,7 +13,7 @@ class State_Action_Transforming_Agent(Abstract_Agent):
                  agent : Abstract_Agent,
                  state_transformation = identity,
                  action_transformation_agent_to_env = identity,
-                 action_transformation_env_to_agent=identity, # these should be inverses
+                 action_transformation_env_to_agent = identity, # these should be inverses
                  hook: Abstract_Hook = Do_Nothing_Hook()
                  ):
         self.agent = agent
@@ -24,6 +24,7 @@ class State_Action_Transforming_Agent(Abstract_Agent):
 
     # returns  an action for the given state.
     # Must also return extras, None is ok if the alg does not use them.
+
     def act(self, state):
         modified_state = self.state_transformation(state)
         agent_action, extras = self.agent.act(modified_state)

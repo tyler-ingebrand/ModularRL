@@ -16,9 +16,11 @@ class Multi_Agent(Abstract_Agent):
 
     # returns  an action for the given state.
     # Must also return extras, None is ok if the alg does not use them.
+    
     def act(self, state):
         actions = {}
         extras = {}
+
         for key in state:
             agent_action, agent_extras = self.agents[key].act(state[key])
             actions[key] = agent_action
