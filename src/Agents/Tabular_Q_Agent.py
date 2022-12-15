@@ -17,8 +17,6 @@ class Tabular_Q_Agent(Abstract_Agent):
         self.max_y_pos = game_size
         self.actions= [0, 1, 2, 3] # TODO: HACK come back to
         self.q_function = np.zeros([self.max_x_pos, self.max_y_pos, len(self.actions)])
-        # print("this worked, I have a q_function")
-        # print(self.q_function) 
 
     # returns  an action for the given state.
     # Must also return extras, None is ok if the alg does not use them.
@@ -43,10 +41,6 @@ class Tabular_Q_Agent(Abstract_Agent):
         I think this is currently epsilon greedy exploration. probably could do better? 
         return: action, agent extras 
         '''
-        # print("state is", state) result: [x, y]
-        # exploartion 
-        # max(min_exploration_prob, np.exp(-exploration_decreasing_decay*e))
-        # print("state is", state)
         x_state = state[0]
         y_state = state[1]
 
@@ -54,9 +48,6 @@ class Tabular_Q_Agent(Abstract_Agent):
         boltzman_exponential = np.exp((self.q_function[x_state, y_state :]) * T)[0]
         pr_sum = np.sum(boltzman_exponential) 
         pr = boltzman_exponential / pr_sum # pr[a] is probability of taking action a.
-        # print(" pr ", pr)
-        # pr = pr[0]
-        # print(np.isnan(pr).any())
         
         if np.isnan(pr).any():
             print(' BOLTZMANN CONSTANT TOO LARGE IN ACTION-SELECTION SOFTMAX.')
@@ -68,15 +59,12 @@ class Tabular_Q_Agent(Abstract_Agent):
         for i in range(len(self.actions)):
             pr_select[i+1] = pr_select[i] + pr[i]
             
-        # print(" PR select", pr_select)
         randn = np.random.random_sample() 
-        # print(" randn", randn)
+
         for a in self.actions:
             if randn >= pr_select[a] and randn <= pr_select[a+1]:
                 a_selected = a
                 break
-        # a_selected = input("what move 0,1,2,3")
-        # return int(a_selected), None
         return a_selected, None # np.random.randint(low=0, high=4), None # this is randomly generating steps
         
     # The main function to learn from data. At a high level, takes in a transition (SARS) and should update the function
@@ -92,7 +80,6 @@ class Tabular_Q_Agent(Abstract_Agent):
         what is done
         what is this "ocassionally updates the policy, but always stores transition"
         '''
-        # print("done is", done)
         self.hook.observe(state, action, reward, done, info, tag)
 
         alpha = self.learning_params['alpha']
@@ -102,23 +89,11 @@ class Tabular_Q_Agent(Abstract_Agent):
         next_x = next_state[0]
         next_y = next_state[1]
 
-        # Bellman update of q-table
-        # print(" pre bellman update")
-        # print(" breaking it down ")
-        # print(" current x ", current_x)
-        # print(" current y ", current_y)
-        # print(" actin ", action)
-        # print(" self.q_function[current_x][current_y][action] ", self.q_function[current_x][current_y][action])
-        
+    
         rhs = (1 - alpha) * self.q_function[current_x][current_y][action] + alpha * (reward + gamma * np.amax(self.q_function[next_x][next_y]))
-        # if reward != 0:
-            # print( "NON ZERO REWARD ", reward)
-        # print('rhs', rhs)
         self.q_function[next_x][next_y][action] = rhs
         
-        # print("   ", self.q_function[next_x][next_y][action])
-        # print(' post bellman update ')
-        return None # WHAT SHOULD THIS BE DOING? does it need a return? 
+        return None 
 
 
     def plot(self):

@@ -10,12 +10,10 @@ class Do_Nothing_Hook(Abstract_Hook):
 
     # Does nothing
     def observe(self, agent, obs, action, reward, done, info, tag = "1"):
-        # print(" I tried to observe a do nothing")
         pass
 
     # returns nothing
     def get_output(self):
-        # print("i tried get output of do nothing")
         return None
 
     # plots whatever data is collected

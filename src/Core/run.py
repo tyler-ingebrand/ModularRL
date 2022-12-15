@@ -13,10 +13,8 @@ def run(  env,
           show_progress : bool = True
           ):
     if isinstance(env, gym.Env):
-        print("it was a gym env")
         gym_run(env, agent, steps, train, render, show_progress)
     elif isinstance(env, pettingzoo.utils.env.ParallelEnv):
-        print("it was a multi_agen_run env") # result: Multi agent not gym 
         multi_agent_run(env, agent, steps, train, render, show_progress)
     else:
         raise Exception("Unknown environment type: {}".format(type(env)))
@@ -78,16 +76,11 @@ def multi_agent_run(  env : pettingzoo.utils.env.ParallelEnv,
     r = range(steps) if not show_progress else trange(steps)
    
     obs = env.reset()
-    # print("in here steps are", steps)
-    # print(f"r is {r}")
     for i in r:
         action, extras = agent.act(obs)
 
         nobs, reward, terminations, truncations, info = env.step(action)
-        # print(f" nobs are {nobs} for i {i} in r.")
-        # print("in here 3")
         if train:
-            # print('in here training?')
             agent.learn(obs, action, reward, nobs, terminations, info, extras)
         if render:
             env.render()

@@ -11,7 +11,6 @@ class Multi_Agent(Abstract_Agent):
                  hook : Abstract_Hook = Do_Nothing_Hook() # The hook to observe this process
                  ):
         self.hook = hook
-        # print("hook is", self.hook)
         self.agents = agents
 
 
@@ -35,7 +34,6 @@ class Multi_Agent(Abstract_Agent):
 
         # Update all agents
         for agent in state:
-            # print(f"agent {agent}. state {state}, done[agent] {done[agent]}.")
             self.agents[agent].learn(state[agent], action[agent], reward[agent], next_state[agent], done[agent], info[agent], extras[agent])
 
     def plot(self):
