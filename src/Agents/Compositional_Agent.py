@@ -26,6 +26,7 @@ class Compositional_Agent(Abstract_Agent):
         return self.agents[active_agent_index].act(state)
 
     def learn(self, state, action, reward, next_state, done, info, extras, tag = "1"):
+        
         # Allow hook to record learning
         self.hook.observe(self, state, action, reward, done, info, tag)
 

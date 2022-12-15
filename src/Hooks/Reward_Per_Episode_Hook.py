@@ -14,9 +14,14 @@ class Reward_Per_Episode_Hook(Abstract_Hook):
         self.number_episodes = 0
 
     def observe(self, agent, obs, action, reward, done, info, tag = "1"):
+        # print("current episode reward", self.current_episode_reward)
+        # print("self.current_episode_reward.get(tag, 0)", self.current_episode_reward.get(tag, 0))
+        # print("reward", reward)
         self.current_episode_reward[tag] = self.current_episode_reward.get(tag, 0) + reward
         self.number_steps += 1
+        # print("I added to the steps")
         if done:
+            # print("i made it in here")
             self.number_episodes += 1
             self.rewards.append(self.current_episode_reward.get(tag, 0))
             self.current_episode_reward[tag] = 0
@@ -27,5 +32,7 @@ class Reward_Per_Episode_Hook(Abstract_Hook):
                 "n_episodes":       self.number_episodes}
 
     def plot(self):
+        # print("rewards", self.rewards)
+
         plt.plot(self.rewards)
         plt.show()

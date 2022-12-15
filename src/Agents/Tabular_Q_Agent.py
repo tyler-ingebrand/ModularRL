@@ -46,10 +46,7 @@ class Tabular_Q_Agent(Abstract_Agent):
         # print("state is", state) result: [x, y]
         # exploartion 
         # max(min_exploration_prob, np.exp(-exploration_decreasing_decay*e))
-        print("state is", state)
-        if type(state) == dict:
-            state = state['player_0'] 
-        print("now state is", state) 
+        # print("state is", state)
         x_state = state[0]
         y_state = state[1]
 
@@ -78,14 +75,16 @@ class Tabular_Q_Agent(Abstract_Agent):
             if randn >= pr_select[a] and randn <= pr_select[a+1]:
                 a_selected = a
                 break
-
+        # a_selected = input("what move 0,1,2,3")
+        # return int(a_selected), None
         return a_selected, None # np.random.randint(low=0, high=4), None # this is randomly generating steps
-    
+        
     # The main function to learn from data. At a high level, takes in a transition (SARS) and should update the function
     # ocassionally updates the policy, but always stores transition
 
     # TODO: check learn return arguments and update frequency also what are these inputs
     def learn(self, state, action, reward, next_state, done, info, extras, tag = "1"):
+        
         ''' 
         What is the 'tag'
         what is extras 
@@ -93,6 +92,9 @@ class Tabular_Q_Agent(Abstract_Agent):
         what is done
         what is this "ocassionally updates the policy, but always stores transition"
         '''
+        # print("done is", done)
+        self.hook.observe(state, action, reward, done, info, tag)
+
         alpha = self.learning_params['alpha']
         gamma = self.learning_params['gamma']
         current_x = state[0]
@@ -113,10 +115,17 @@ class Tabular_Q_Agent(Abstract_Agent):
             # print( "NON ZERO REWARD ", reward)
         # print('rhs', rhs)
         self.q_function[next_x][next_y][action] = rhs
+        
         # print("   ", self.q_function[next_x][next_y][action])
         # print(' post bellman update ')
-        # return None # WHAT SHOULD THIS BE DOING? does it need a return? 
+        return None # WHAT SHOULD THIS BE DOING? does it need a return? 
 
 
     def plot(self):
+        print("plotting q")
+        print("rewards", self.hook.rewards)
+        print("current_episode_reward", self.hook.current_episode_reward)
+        print("number_steps", self.hook.number_steps)
+        print("number_episodes", self.hook.number_episodes)
+
         self.hook.plot()
