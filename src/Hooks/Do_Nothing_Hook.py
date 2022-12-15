@@ -18,5 +18,5 @@ class Do_Nothing_Hook(Abstract_Hook):
 
     # plots whatever data is collected
     def plot(self):
-        print(" I tried to plot a do nothing")
+        # print(" I tried to plot a do nothing")
         pass

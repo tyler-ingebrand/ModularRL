@@ -10,6 +10,8 @@ class Compositional_Agent(Abstract_Agent):
                  agents, # a list of agents to activate
                  determine_active_agent,  # A function of the state which returns the index of the active agent
                  reward_functions, # A list of reward functions to use, with indices matching the index of the agent
+                 done_on_agent_transition, # whether or not to tell the agent it is done when the next active agent changes
+                                            # should be true if transitioning is the goal, false if transitioning happens randomly
                  hook : Abstract_Hook = Do_Nothing_Hook(), # The hook to observe this process
                  update_memory=lambda state, memory : None,
                  ):
@@ -18,6 +20,7 @@ class Compositional_Agent(Abstract_Agent):
         self.determine_active_agent = determine_active_agent
         self.reward_functions = reward_functions
         self.update_memory = update_memory
+        self.done_on_agent_transition = done_on_agent_transition
         self.memory = {}
 
     def act(self, state):
@@ -35,7 +38,7 @@ class Compositional_Agent(Abstract_Agent):
         next_active_agent = self.determine_active_agent(next_state, self.memory)
 
         # done if MDP terminates or if the agent to act in next state is different, which means the sub-MDP has terminated
-        current_done = done or current_active_agent != next_active_agent
+        current_done = done or (self.done_on_agent_transition and current_active_agent != next_active_agent)
 
         reward = self.reward_functions[current_active_agent](state, action, next_state)
 
