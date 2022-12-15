@@ -46,6 +46,10 @@ class Tabular_Q_Agent(Abstract_Agent):
         # print("state is", state) result: [x, y]
         # exploartion 
         # max(min_exploration_prob, np.exp(-exploration_decreasing_decay*e))
+        print("state is", state)
+        if type(state) == dict:
+            state = state['player_0'] 
+        print("now state is", state) 
         x_state = state[0]
         y_state = state[1]
 

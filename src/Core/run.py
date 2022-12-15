@@ -13,10 +13,10 @@ def run(  env,
           show_progress : bool = True
           ):
     if isinstance(env, gym.Env):
-        # print("it was a gym env")
+        print("it was a gym env")
         gym_run(env, agent, steps, train, render, show_progress)
     elif isinstance(env, pettingzoo.utils.env.ParallelEnv):
-        # print("it was a multi_agen_run env") # result: Multi agent not gym 
+        print("it was a multi_agen_run env") # result: Multi agent not gym 
         multi_agent_run(env, agent, steps, train, render, show_progress)
     else:
         raise Exception("Unknown environment type: {}".format(type(env)))
