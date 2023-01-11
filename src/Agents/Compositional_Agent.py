@@ -40,7 +40,10 @@ class Compositional_Agent(Abstract_Agent):
         # done if MDP terminates or if the agent to act in next state is different, which means the sub-MDP has terminated
         current_done = done or (self.done_on_agent_transition and current_active_agent != next_active_agent)
 
-        reward = self.reward_functions[current_active_agent](state, action, next_state)
+        # sometimes other information is needed that is not part of the state, action, next_state, such as goal information
+        # which the agent is meant to learn implicitly, but is not provided in s,a,ns alone.
+        reward = self.reward_functions[current_active_agent](state, action, next_state, info)
+
 
         self.agents[current_active_agent].learn(state, action, reward, next_state, current_done, info, extras, tag)
 

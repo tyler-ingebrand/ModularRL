@@ -34,7 +34,7 @@ class Multi_Agent(Abstract_Agent):
 
         # Update all agents
         for agent in state:
-            self.agents[agent].learn(state[agent], action[agent], reward[agent], next_state[agent], done[agent], info[agent], extras[agent])
+            self.agents[agent].learn(state.get(agent), action.get(agent), reward.get(agent), next_state.get(agent), done.get(agent), info.get(agent), extras.get(agent))
 
     def plot(self):
         self.hook.plot()

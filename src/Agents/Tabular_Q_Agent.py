@@ -32,7 +32,7 @@ class Replay_Buffer:
         self.actions[self.pos] = torch.tensor(action, dtype=torch.long, device=self.device)
         self.rewards[self.pos] = torch.tensor(reward, device=self.device)
         self.dones[self.pos] = torch.tensor(done, device=self.device)
-        self.next_states[self.pos] = torch.tensor(next_state, dtype=torch.long, device=self.device)
+        self.next_states[self.pos] = torch.tensor(next_state, dtype=torch.long, device=self.device) if next_state is not None else torch.zeros_like(self.states[self.pos])
         self.pos += 1
         if self.pos == self.buffer_size:
             self.full = True

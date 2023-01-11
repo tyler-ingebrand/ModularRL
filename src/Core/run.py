@@ -10,12 +10,13 @@ def run(  env,
           steps : int,
           train : bool = True,
           render : bool = False,
-          show_progress : bool = True
+          show_progress : bool = True,
+          verbose: bool = False
           ):
     if isinstance(env, gym.Env):
-        gym_run(env, agent, steps, train, render, show_progress)
+        gym_run(env, agent, steps, train, render, show_progress, verbose)
     elif isinstance(env, pettingzoo.utils.env.ParallelEnv):
-        multi_agent_run(env, agent, steps, train, render, show_progress)
+        multi_agent_run(env, agent, steps, train, render, show_progress, verbose)
     else:
         raise Exception("Unknown environment type: {}".format(type(env)))
 
@@ -26,8 +27,9 @@ def gym_run(  env : gym.Env,
           steps : int,
           train : bool = True,
           render : bool = False,
-          show_progress : bool = True
-          ):
+          show_progress : bool = True,
+          verbose: bool = False
+              ):
     assert env is not None, " Env must exists. Got None instead of a gym.Env object"
     assert agent is not None, "Agent must exists. Got None instead of a Agent object"
     assert steps > 0, "Must run for some number positive number of steps. Got {} steps".format(steps)
@@ -66,8 +68,10 @@ def multi_agent_run(  env : pettingzoo.utils.env.ParallelEnv,
           steps : int,
           train : bool = True,
           render : bool = False,
-          show_progress : bool = True
-          ):
+          show_progress : bool = True,
+          verbose: bool = False
+
+                      ):
     assert env is not None, " Env must exists. Got None instead of a gym.Env object"
     assert agent is not None, "Agent must exists. Got None instead of a Agent object"
     assert steps > 0, "Must run for some number positive number of steps. Got {} steps".format(steps)
@@ -87,8 +91,29 @@ def multi_agent_run(  env : pettingzoo.utils.env.ParallelEnv,
 
         # handle reset. Env may be a vector or a single env.
         # If single, done = bool. If vector, done = numpy array
-        if all(terminations.values()) or all(truncations.values()):
+        if all(terminations.values()) or all(truncations.values()) or len(terminations) == 0 or len(truncations) == 0:
+            # if all(terminations.values()):
+            #     print("Resetting for reason terminations")
+            # if all(truncations.values()):
+            #     print("Resetting for reason truncations")
+            # if len(terminations) == 0:
+            #     print("Resetting for reason len terminations")
+            # if len(truncations) == 0:
+            #     print("Resetting for reason len truncations")
             nobs = env.reset()
+
+        if len(nobs) == 0:
+            raise Exception("Next State is empty, need to reset")
+
+        # if any agents are done, delete their obs
+        for key in terminations:
+            if terminations[key]:
+                obs.pop(key)
+
+        if verbose:
+            print(obs)
+            print(reward)
+
         obs = nobs
 
     # wrap up
