@@ -28,10 +28,10 @@ class Compositional_Agent(Abstract_Agent):
         active_agent_index = self.determine_active_agent(state, self.memory)
         return self.agents[active_agent_index].act(state)
 
-    def learn(self, state, action, reward, next_state, done, info, extras, tag = "1"):
+    def learn(self, state, action, reward, next_state, done, truncated, info, extras, tag = "1"):
         
         # Allow hook to record learning
-        self.hook.observe(self, state, action, reward, done, info, tag)
+        self.hook.observe(self, state, action, reward, done,truncated, info, tag)
 
         # Figure out which agent made the action, and which will make it at the next step
         current_active_agent = self.determine_active_agent(state, self.memory)
@@ -45,7 +45,7 @@ class Compositional_Agent(Abstract_Agent):
         reward = self.reward_functions[current_active_agent](state, action, next_state, info)
 
 
-        self.agents[current_active_agent].learn(state, action, reward, next_state, current_done, info, extras, tag)
+        self.agents[current_active_agent].learn(state, action, reward, next_state, current_done,truncated, info, extras, tag)
 
     def plot(self):
         self.hook.plot()

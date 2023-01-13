@@ -85,7 +85,7 @@ def multi_agent_run(  env : pettingzoo.utils.env.ParallelEnv,
 
         nobs, reward, terminations, truncations, info = env.step(action)
         if train:
-            agent.learn(obs, action, reward, nobs, terminations, info, extras)
+            agent.learn(obs, action, reward, nobs, terminations, truncations, info, extras)
         if render:
             env.render()
 
@@ -109,10 +109,6 @@ def multi_agent_run(  env : pettingzoo.utils.env.ParallelEnv,
         for key in terminations:
             if terminations[key]:
                 obs.pop(key)
-
-        if verbose:
-            print(obs)
-            print(reward)
 
         obs = nobs
 

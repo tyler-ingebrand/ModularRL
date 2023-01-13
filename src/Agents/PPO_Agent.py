@@ -43,14 +43,14 @@ class PPO_Agent(Abstract_Agent):
             action = numpy.clip(action, self.action_space.low, self.action_space.high)
         return action, extras
 
-    def learn(self, state, action, reward, next_state, done, info, extras, tag = "1"):
+    def learn(self, state, action, reward, next_state, done,truncated, info, extras, tag = "1"):
         assert state in self.state_space, "State is {}, expected something in {}".format(state, self.state_space)
         assert action in self.action_space, "Action is {}, expected something in {}".format(action, self.action_space)
         assert next_state in self.state_space, "Next_State is {}, expected something in {}".format(next_state, self.state_space)
         value, action_probabilities = extras["value"], extras["log_prob"]
 
         # Allow hook to observe
-        self.hook.observe(self, state, action, reward, done, info, tag)
+        self.hook.observe(self, state, action, reward, done,truncated, info, tag)
 
         # if discrete env, send back to tensor. Converted to a discrete int for the env in the act function.
         if self.is_discrete_action:

@@ -14,10 +14,10 @@ class Reward_Per_Episode_Hook(Abstract_Hook):
         self.number_steps = 0
         self.number_episodes = 0
 
-    def observe(self, agent, obs, action, reward, done, info, tag = "1"):
+    def observe(self, agent, obs, action, reward, done,truncated, info, tag = "1"):
         self.current_episode_reward[tag] = self.current_episode_reward.get(tag, 0) + reward
         self.number_steps += 1
-        if done:
+        if done or truncated:
             self.number_episodes += 1
             self.rewards.append(self.current_episode_reward.get(tag, 0))
             self.current_episode_reward[tag] = 0

@@ -30,9 +30,9 @@ class Vectorized_Agent(Abstract_Agent):
             extras.append(extra)
         return actions, extras
 
-    def learn(self, state, action, reward, next_state, done, info, extras, tag = "1"):
+    def learn(self, state, action, reward, next_state, done, truncated,info, extras, tag = "1"):
         # Allow hook to record learning
-        self.hook.observe(self, state, action, reward, done, info, tag)
+        self.hook.observe(self, state, action, reward, done,truncated, info, tag)
 
         for env_index in range(self.number_envs):
             self.agent.learn(state[env_index],

@@ -1,3 +1,5 @@
+import enum
+
 from gymnasium.spaces import MultiDiscrete, Discrete
 
 from src.Agents.Abstract_Agent import Abstract_Agent
@@ -55,10 +57,14 @@ class Replay_Buffer:
 
 
 
+
 # Agent interface
 # this class provides a tabular Q based algorithm for solving discrete state/action space MDPs
 class Tabular_Q_Agent(Abstract_Agent):
-
+    class ExplorationType(enum.Enum):
+        Epsilon = 1
+        Boltzmann = 2
+        Deterministic = 3
     # for now assume state_space is multi-discrete and action space is discrete
     def __init__(self,
                  state_space,
@@ -68,7 +74,10 @@ class Tabular_Q_Agent(Abstract_Agent):
                  buffer_size=100_000,
                  update_frequency = 1000,
                  batch_size=100,
-                 reward_scale = 1.0,
+
+                 reward_scale = 1.0, # for boltzman exploration
+                 epsilon = 0.1, # for epsilon exploration
+                 exploration_type = ExplorationType.Epsilon,
 
                  hook:Abstract_Hook = Do_Nothing_Hook()):
 
@@ -96,94 +105,47 @@ class Tabular_Q_Agent(Abstract_Agent):
         self.update_frequency = update_frequency
         self.current_step = 0
         self.batch_size = batch_size
+
+        self.epsilon = epsilon
         self.reward_scale = reward_scale
+        self.exploration_type = exploration_type
 
         # store memories in table
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.buffer = Replay_Buffer(self.state_dims, self.action_dims, buffer_size=buffer_size)
 
-        # self.set_learning_params() # set the learning params for the q-learning
-        # question: how do I know what the possible states are?
-        #self.max_x_pos = game_size
-        #self.max_y_pos = game_size
-        #self.actions= [0, 1, 2, 3] # TODO: HACK come back to
-        #self.q_function = np.zeros([self.max_x_pos, self.max_y_pos, len(self.actions)])
-
         # q table and optimizer. Can use gradient descent, ADAM, etc
         self.q_function = torch.zeros(self.state_dims + self.action_dims, device=self.device, requires_grad=True)
         self.q_optimizer = torch.optim.Adam((self.q_function,))
 
-
-        # whether or not to act stochasitcally
-        self.stochastic = True
     # returns  an action for the given state.
     # Must also return extras, None is ok if the alg does not use them.
-    
-    def set_learning_params(self):
-        '''
-        sets hardcoded learning parameters for q-learning
-        stores in dictionary, keys: 
-            'alpha', 'gamma', 'T', 'initial_epsilon', 
-            initial_epsilon', 'max_timesteps_per_task'
-        '''
-        learning_params = {}
-        learning_params['alpha'] = .8 # learning rate
-        learning_params['gamma'] = .9 # MDP discount factor
-        learning_params['T'] = 50 # WHAT DOES THIS DO?????? TODO: check
-        learning_params['initial_epsilon'] = .1 # set epsilon to zero to  turn off epsilon-greedy exploration
-        # learning_params['max_timesteps_per_task'] = 1000 # DO I NEED THIS TODO: check 
-        self.learning_params = learning_params 
-
     def act(self, state):
         '''
         I think this is currently epsilon greedy exploration. probably could do better? 
         return: action, agent extras 
         '''
-        #x_state = state[0]
-        #y_state = state[1]
-
-        # This is softmax
-        # T scales how much we care about a small difference in values
-        # equivalent to scaling reward
-        # T = self.learning_params['T']
-        # boltzman_exponential = np.exp((self.q_function[x_state, y_state :]) * T)[0]
-        # pr_sum = np.sum(boltzman_exponential)
-        # pr = boltzman_exponential / pr_sum # pr[a] is probability of taking action a.
 
         state = tuple(state)
         values = self.q_function[state]
-        if self.stochastic:
+        if self.exploration_type == self.ExplorationType.Boltzmann:
+            values *= self.reward_scale
             probabilities = torch.nn.Softmax(dim=0)(values) # assumes 1 dimensional action space, todo
             random_index =  torch.multinomial(probabilities, num_samples=1)
             return random_index.item(), None
-        else:
+        elif self.exploration_type == self.ExplorationType.Epsilon and torch.rand(size=(1,)) <= self.epsilon:
+            return torch.randint(0, self.action_dims[0], size=(1,)).item(), None
+        else: # detirministic mode, or epsilon but not randomly selected
             return torch.max(values, dim=0).indices.item(), None
 
-        # if np.isnan(pr).any():
-        #     print(' BOLTZMANN CONSTANT TOO LARGE IN ACTION-SELECTION SOFTMAX.')
-        #     temp = np.array(np.isnan(pr), dtype = float)
-        #     pr = temp / np.sum(temp)
-        #
-        # pr_select = np.zeros(len(self.actions) + 1)
-        # pr_select[0] = 0
-        # for i in range(len(self.actions)):
-        #     pr_select[i+1] = pr_select[i] + pr[i]
-        #
-        # randn = np.random.random_sample()
-        #
-        # for a in self.actions:
-        #     if randn >= pr_select[a] and randn <= pr_select[a+1]:
-        #         a_selected = a
-        #         break
 
-        # note item converts it from a tensor containing an int to an int
-        # np.random.randint(low=0, high=4), None # this is randomly generating steps
+
         
     # The main function to learn from data. At a high level, takes in a transition (SARS) and should update the function
     # ocassionally updates the policy, but always stores transition
 
     # TODO: check learn return arguments and update frequency also what are these inputs
-    def learn(self, state, action, reward, next_state, done, info, extras, tag = "1"):
+    def learn(self, state, action, reward, next_state, done,truncated, info, extras, tag = "1"):
         
         ''' 
         What is the 'tag'
@@ -194,7 +156,7 @@ class Tabular_Q_Agent(Abstract_Agent):
         '''
         # allow hook to observe learning, mostly to save reward
         # note the agent needs to view the agent maybe, which is self
-        self.hook.observe(self, state, action, reward, done, info, tag)
+        self.hook.observe(self, state, action, reward, done, truncated,info, tag)
 
         # Save transition to buffer for future use
         self.buffer.add(state, action, reward, done, next_state)
@@ -214,19 +176,7 @@ class Tabular_Q_Agent(Abstract_Agent):
         # delete old gradients. Necessary for torch syntax.
         self.q_optimizer.zero_grad()
 
-        # alpha = self.learning_params['alpha']
-        # gamma = self.learning_params['gamma']
-        # current_x = state[0]
-        # current_y = state[1]
-        # next_x = next_state[0]
-        # next_y = next_state[1]
-        #
-        #
-        # rhs = (1 - alpha) * self.q_function[current_x][current_y][action] + alpha * (reward + gamma * np.amax(self.q_function[next_x][next_y]))
-        # self.q_function[next_x][next_y][action] = rhs
-
         # compute q value according to reward + value at next state
-
         next_state_values = multi_dimensional_index_select(self.q_function, next_states)
         target_q_values = rewards + (1-dones) * self.gamma * torch.max(next_state_values, dim=1).values
 
@@ -243,11 +193,8 @@ class Tabular_Q_Agent(Abstract_Agent):
 
 
     def plot(self):
-        # print("plotting q")
-        # print("rewards", self.hook.rewards)
-        # print("current_episode_reward", self.hook.current_episode_reward)
-        # print("number_steps", self.hook.number_steps)
-        # print("number_episodes", self.hook.number_episodes)
+        print("plotting q")
+        print(self.q_function)
         self.hook.plot()
 
 def multi_dimensional_index_select(source, indices):
@@ -260,13 +207,3 @@ def multi_dimensional_index_select(source, indices):
         ret[batch] = out
     return ret
 
-
-
-
-    # number_dims = indices.shape[1]
-    # values = source
-    # for i in range(number_dims):
-    #     values = torch.index_select(values, i, indices[:, i])
-    #     if i > 0:
-    #         values = values[0]
-    # return values

@@ -11,7 +11,7 @@ class Abstract_Agent:
 
     # The main function to learn from data. At a high level, takes in a transition (SARS) and should update the function
     # ocassionally updates the policy, but always stores transition
-    def learn(self, state, action, reward, next_state, done, info, extras, tag = "1"):
+    def learn(self, state, action, reward, next_state, done, truncated, info, extras, tag = "1"):
         raise Exception("Unimplemented")
 
     def plot(self):

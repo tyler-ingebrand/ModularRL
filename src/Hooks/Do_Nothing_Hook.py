@@ -9,7 +9,7 @@ class Do_Nothing_Hook(Abstract_Hook):
         pass
 
     # Does nothing
-    def observe(self, agent, obs, action, reward, done, info, tag = "1"):
+    def observe(self, agent, obs, action, reward, done,truncated, info, tag = "1"):
         pass
 
     # returns nothing

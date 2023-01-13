@@ -13,7 +13,7 @@ class Evaluate_Hook(Abstract_Hook):
         self.every_N_steps = every_N_steps
         self.eval_env = eval_env
         self.eval_runs = eval_runs
-    def observe(self, agent, obs, action, reward, done, info, tag = "1"):
+    def observe(self, agent, obs, action, reward, done,truncated, info, tag = "1"):
         self.number_steps += 1
         if self.number_steps % self.every_N_steps == 0:
             self.evaluate(agent)
