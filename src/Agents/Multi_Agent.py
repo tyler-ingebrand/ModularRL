@@ -28,8 +28,10 @@ class Multi_Agent(Abstract_Agent):
 
     # The main function to learn from data. At a high level, takes in a transition (SARS) and should update the function
     # ocassionally updates the policy, but always stores transition
+
     def learn(self, state, action, reward, next_state, done, truncated, info, extras, tag = "1"):
         # update hook
+        # print("reward is", reward)
         self.hook.observe(self, state, action, reward, done,truncated, info, tag)
 
         # Update all agents
