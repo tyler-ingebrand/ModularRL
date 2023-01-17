@@ -9,6 +9,7 @@ import numpy
 
 class Successful_Agents_Per_Episode_Hook(Abstract_Hook):
     def __init__(self):
+
         self.current_episode_num_agents = 0
         # self.rewards = []
         self.num_successful_agents = []
@@ -32,10 +33,21 @@ class Successful_Agents_Per_Episode_Hook(Abstract_Hook):
                 self.current_episode_num_agents = self.current_episode_num_agents + 1  #how am i increasing number of agents. 
              
         self.number_steps += 1
-        if done or truncated:
+        # DONE AND TRUNCATED MIGHT BE DICTIONARIES OPE! 
+        # print("done is", done)
+        # print("truncated is", truncated)
+        # look at run.py lines 85 - 94
+        #terminations = done , truncations = truncated
+
+        if all(done.values()) or all(truncated.values()) or len(done) == 0 or len(truncated) == 0:
             self.number_episodes += 1
             self.num_successful_agents.append(self.current_episode_num_agents)
             self.current_episode_num_agents = 0
+
+        # if done or truncated:
+        #     self.number_episodes += 1
+        #     self.num_successful_agents.append(self.current_episode_num_agents)
+        #     self.current_episode_num_agents = 0
 
     def get_output(self):
         return {"episode_rewards" : self.rewards,
