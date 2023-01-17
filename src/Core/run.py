@@ -1,4 +1,5 @@
 import gym
+import gymnasium
 import pettingzoo.utils.env
 from tqdm import trange # progress bar
 from src.Agents.Abstract_Agent import Abstract_Agent
@@ -15,8 +16,8 @@ def run(  env,
           ):
     if isinstance(env, gym.Env):
         gym_run(env, agent, steps, train, render, show_progress, verbose)
-    elif isinstance(env, pettingzoo.utils.env.ParallelEnv):
-        multi_agent_run(env, agent, steps, train, render, show_progress, verbose)
+    elif isinstance(env, pettingzoo.utils.env.ParallelEnv) or isinstance(env, gymnasium.Wrapper):
+        multi_agent_run(env, agent, steps, train, render, show_progress)
     else:
         raise Exception("Unknown environment type: {}".format(type(env)))
 
@@ -69,8 +70,6 @@ def multi_agent_run(  env : pettingzoo.utils.env.ParallelEnv,
           train : bool = True,
           render : bool = False,
           show_progress : bool = True,
-          verbose: bool = False
-
                       ):
     assert env is not None, " Env must exists. Got None instead of a gym.Env object"
     assert agent is not None, "Agent must exists. Got None instead of a Agent object"
@@ -92,14 +91,6 @@ def multi_agent_run(  env : pettingzoo.utils.env.ParallelEnv,
         # handle reset. Env may be a vector or a single env.
         # If single, done = bool. If vector, done = numpy array
         if all(terminations.values()) or all(truncations.values()) or len(terminations) == 0 or len(truncations) == 0:
-            # if all(terminations.values()):
-            #     print("Resetting for reason terminations")
-            # if all(truncations.values()):
-            #     print("Resetting for reason truncations")
-            # if len(terminations) == 0:
-            #     print("Resetting for reason len terminations")
-            # if len(truncations) == 0:
-            #     print("Resetting for reason len truncations")
             nobs = env.reset()
 
         if len(nobs) == 0:
