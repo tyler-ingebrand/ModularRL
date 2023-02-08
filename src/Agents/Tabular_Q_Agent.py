@@ -120,6 +120,7 @@ class Tabular_Q_Agent(Abstract_Agent):
 
     # returns  an action for the given state.
     # Must also return extras, None is ok if the alg does not use them.
+    
     def act(self, state):
         '''
         I think this is currently epsilon greedy exploration. probably could do better? 
