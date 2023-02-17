@@ -34,9 +34,8 @@ class Compositional_Agent(Abstract_Agent):
 
         # Figure out which agent made the action, and which will make it at the next step
         current_active_agent = self.determine_active_agent(state, self.memory)
-        next_active_agent = self.determine_active_agent(next_state, self.memory) #I'm not sure the RR code is set up to do this right now
+        next_active_agent = self.determine_active_agent(next_state, self.memory) 
 
-       
         # done if MDP terminates or if the agent to act in next state is different, which means the sub-MDP has terminated
         current_done = done or (self.done_on_agent_transition and current_active_agent != next_active_agent)
         
@@ -48,8 +47,8 @@ class Compositional_Agent(Abstract_Agent):
             print(f"current done is {current_done}")
         # sometimes other information is needed that is not part of the state, action, next_state, such as goal information
         # which the agent is meant to learn implicitly, but is not provided in s,a,ns alone.
-        reward = self.reward_functions[current_active_agent](state, action, next_state, info)
-
+        reward = self.reward_functions[current_active_agent](state, action, next_state, info) #TODO: do not change reward. get rid of this line. put functions into env. 
+        
 
         self.agents[current_active_agent].learn(state, action, reward, next_state, current_done, truncated, info, extras, tag)
 
