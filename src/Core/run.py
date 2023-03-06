@@ -83,9 +83,10 @@ def multi_agent_run(  env : pettingzoo.utils.env.ParallelEnv,
         action, extras = agent.act(obs)
 
         nobs, reward, terminations, truncations, info = env.step(action)
+        
         if train:
             agent.learn(obs, action, reward, nobs, terminations, truncations, info, extras)
-        if render:
+        if render: 
             env.render()
 
         # handle reset. Env may be a vector or a single env.
@@ -99,7 +100,9 @@ def multi_agent_run(  env : pettingzoo.utils.env.ParallelEnv,
         # if any agents are done, delete their obs
         for key in terminations:
             if terminations[key]:
+                # print(f"pre pop obs {obs}, key is {key}" )
                 obs.pop(key)
+                # print(f"post pop obs {obs} ")
 
         obs = nobs
 
