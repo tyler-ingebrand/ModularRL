@@ -9,9 +9,9 @@ import torch
 
 # Create a replay buffer to store experiences. This assumes state and actions are discrete (ints)
 class Replay_Buffer:
-    def __init__(self, state_dims, action_dims, buffer_size=100_000):
+    def __init__(self, state_dims, action_dims, buffer_size=100_000, device=None):
         self.buffer_size = buffer_size
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device(device if device is not None else "cuda:0" if torch.cuda.is_available() else "cpu")
 
         state_dim_len = len(state_dims)
         action_dim_len = len(action_dims)
@@ -75,6 +75,8 @@ class Tabular_Q_Agent(Abstract_Agent):
                  update_frequency = 1000,
                  batch_size=100,
 
+                 device=None,
+
                  reward_scale = 1.0, # for boltzman exploration
                  epsilon = 0.1, # for epsilon exploration
                  exploration_type = ExplorationType.Epsilon,
@@ -111,8 +113,8 @@ class Tabular_Q_Agent(Abstract_Agent):
         self.exploration_type = exploration_type
 
         # store memories in table
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.buffer = Replay_Buffer(self.state_dims, self.action_dims, buffer_size=buffer_size)
+        self.device = torch.device(device if device is not None else "cuda:0" if torch.cuda.is_available() else "cpu")
+        self.buffer = Replay_Buffer(self.state_dims, self.action_dims, buffer_size=buffer_size, device=device)
 
         # q table and optimizer. Can use gradient descent, ADAM, etc
         self.q_function = torch.zeros(self.state_dims + self.action_dims, device=self.device, requires_grad=True)
