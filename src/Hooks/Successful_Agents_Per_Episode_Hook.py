@@ -29,7 +29,7 @@ class Successful_Agents_Per_Episode_Hook(Abstract_Hook):
         
         for agent_id, agent_reward in reward.items():
             # ONLY COLLECTING # OF AGENTS TO REACH GOAL. does not record which agents or when
-            if agent_reward == 1:  
+            if agent_reward == 1.0:
                 self.current_episode_num_agents = self.current_episode_num_agents + 1  #how am i increasing number of agents. 
              
         self.number_steps += 1

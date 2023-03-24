@@ -128,18 +128,18 @@ class Tabular_Q_Agent(Abstract_Agent):
         I think this is currently epsilon greedy exploration. probably could do better? 
         return: action, agent extras 
         '''
-
-        state = tuple(state)
-        values = self.q_function[state]
-        if self.exploration_type == self.ExplorationType.Boltzmann:
-            values *= self.reward_scale
-            probabilities = torch.nn.Softmax(dim=0)(values) # assumes 1 dimensional action space, todo
-            random_index =  torch.multinomial(probabilities, num_samples=1)
-            return random_index.item(), None
-        elif self.exploration_type == self.ExplorationType.Epsilon and torch.rand(size=(1,)) <= self.epsilon:
-            return torch.randint(0, self.action_dims[0], size=(1,)).item(), None
-        else: # detirministic mode, or epsilon but not randomly selected
-            return torch.max(values, dim=0).indices.item(), None
+        with torch.no_grad():
+            state = tuple(state)
+            values = self.q_function[state]
+            if self.exploration_type == self.ExplorationType.Boltzmann:
+                values *= self.reward_scale
+                probabilities = torch.nn.Softmax(dim=0)(values) # assumes 1 dimensional action space, todo
+                random_index =  torch.multinomial(probabilities, num_samples=1)
+                return random_index.item(), None
+            elif self.exploration_type == self.ExplorationType.Epsilon and torch.rand(size=(1,)) <= self.epsilon:
+                return torch.randint(0, self.action_dims[0], size=(1,)).item(), None
+            else: # detirministic mode, or epsilon but not randomly selected
+                return torch.max(values, dim=0).indices.item(), None
 
 
 
